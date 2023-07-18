@@ -1,0 +1,27 @@
+# -*- mode: snippet -*-
+# name: Binarylookup
+# key: BL
+# --
+#include<iostream>
+#include<cstdio>
+#include<cmath>
+#include<algorithm>
+using namespace std;
+$1Binary_lookup($1high, $1low){
+    while(high - low >= $2){
+        $1 mid = (high + low) / 2;
+	if($3 $4 $5){
+	    high = mid$6;
+        } else  {
+	    low = mid$7;
+        }
+    }
+    return low;
+}
+int main(){
+    $8
+    $1res = Binary_lookup($9, $10);
+    cout<<res<<endl;
+    $0
+    return 0;
+}
