@@ -34,7 +34,9 @@
 
 (set-locale-environment "en_US.utf-8")
 (setq system-time-locale "C")
-(setq auto-save-default nil)
+(setq auto-save-default nil
+      make-backup-files nil)
+
 
 
 ;;===================================================
@@ -44,6 +46,7 @@
 
 (use-package use-package-hydra
   :after hydra)
+
 
 ;;==============================================
 ;;hightlight-symbol
@@ -112,6 +115,7 @@
   :defer 1
   :init
   (global-corfu-mode)
+  (setq completion-cycle-threshold 3)
   (setq tab-always-indent 'complete)
   (setq corfu-auto t
 	corfu-quit-no-match 'separator))
@@ -161,34 +165,8 @@
         '(read-only t cursor-intangible t face minibuffer-prompt))
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
   (setq enable-recursive-minibuffers t))
-;;===================================================
-;;cape
-;;=================================================
-(use-package cape...
-  :bind (("C-c p p" . completion-at-point) ;; capf
-         ("C-c p t" . complete-tag)        ;; etags
-         ("C-c p d" . cape-dabbrev)        ;; or dabbrev-completion
-         ("C-c p h" . cape-history)
-         ("C-c p f" . cape-file)
-         ("C-c p k" . cape-keyword)
-         ("C-c p s" . cape-symbol)
-         ("C-c p a" . cape-abbrev)
-         ("C-c p l" . cape-line)
-         ("C-c p w" . cape-dict)
-         ("C-c p \\" . cape-tex)
-         ("C-c p _" . cape-tex
-         ("C-c p ^" . cape-tex)
-         ("C-c p &" . cape-sgml)
-         ("C-c p r" . cape-rfc1345))
-  :init
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
 
-;; Use Company backends as Capfs.
-(setq-local completion-at-point-functions
-  (mapcar #'cape-company-to-capf
-    (list #'company-files #'company-ispell #'company-dabbrev)))
+
 ;;=========================================
 ;;auctex
 ;;=======================================
@@ -236,7 +214,6 @@
 ;;=================================================
 ;;yasnippet
 ;;=================================================
-
 (use-package yas-global-mode
   :defer 1
   :init
@@ -296,7 +273,7 @@
  '(display-time-mode t)
  '(global-display-line-numbers-mode t)
  '(package-selected-packages
-   '(company cape vertico orderless neotree kind-icon corfu hydra yasnippet-snippets highlight-symbol use-package-hydra which-key spaceline atom-one-dark-theme undo-tree rainbow-delimiters yasnippets auctex dashboard swiper youdao-dictionary monokai-theme))
+   '(vertico orderless neotree kind-icon corfu hydra yasnippet-snippets highlight-symbol use-package-hydra which-key spaceline atom-one-dark-theme undo-tree rainbow-delimiters yasnippets auctex dashboard swiper youdao-dictionary monokai-theme))
  '(size-indication-mode t)
  '(tool-bar-mode nil))
 
