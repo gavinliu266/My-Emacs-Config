@@ -75,10 +75,9 @@
 (setq system-time-locale "C")
 (setq auto-save-default nil
       make-backup-files nil)
+(use-package emacs :config (defalias 'yes-or-no-p 'y-or-n-p))
 
-
-
-
+(setq gc-cons-threshold (* 50 1000 1000))
 ;;==============================================
 ;;hightlight-symbol
 ;;=============================================
@@ -104,7 +103,7 @@
 ;;which-key
 ;;===============================================
 (use-package which-key
-  :defer 5
+  :defer 1
   :init (which-key-mode))
 
 
@@ -136,9 +135,7 @@
 				 ("DONE" . (:foreground "green" :background "clear" :weight bold))
 				 ("CANCELED" . (:foreground "gray" :background "clear")))))
 
-(use-package emacs :config (defalias 'yes-or-no-p 'y-or-n-p))
 
-(setq gc-cons-threshold (* 50 1000 1000))
 ;=================================================
 ;corfu
 ;;================================================
@@ -210,8 +207,8 @@
   :defer 1
   :init (global-undo-tree-mode)
   :after hydra
-  :bind ("C-x u" . undo-tree-undo)
-  :bind ("C-x r" . undo-tree-redo))
+  :bind ("C-x C-u" . undo-tree-undo)
+  :bind ("C-x C-r" . undo-tree-redo))
 
 
 ;;=================================================
