@@ -40,6 +40,7 @@
 		neotree
 		kind-icon
 		all-the-icons
+		spaceline
 		) "Default packages")
 
  (setq package-selected-packages my/packages)
