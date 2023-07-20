@@ -18,6 +18,44 @@
                          ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
 (package-initialize) ;; You might already have this line
 
+(defvar my/packages '(
+		use-package
+		corfu
+		swiper
+		vertico
+		orderless
+	        flycheck
+	        yasnippet
+		yasnippet-snippets
+		dashboard
+		org-bullets
+		neotree
+		racket-mode
+		good-scroll
+		auctex
+		which-key
+		highlight-symbol
+		monokai-theme
+		rainbow-delimiters
+		neotree
+		kind-icon
+		all-the-icons
+		) "Default packages")
+
+ (setq package-selected-packages my/packages)
+
+(defun my/packages-installed-p ()
+  (setq tmp t)
+  (dolist (pkg my/packages)
+       (when (not (package-installed-p pkg)) (setq tmp nil)))
+  tmp)
+
+ (unless (my/packages-installed-p)
+     (message "%s" "Refreshing package database...")
+     (package-refresh-contents)
+     (dolist (pkg my/packages)
+       (when (not (package-installed-p pkg))
+	 (package-install pkg))))
 ;========================================================
 ;basic Settings
 ;;======================================================
@@ -38,14 +76,6 @@
       make-backup-files nil)
 
 
-
-;;===================================================
-;;hydra
-;;==================================================
-(use-package hydra)
-
-(use-package use-package-hydra
-  :after hydra)
 
 
 ;;==============================================
@@ -121,13 +151,11 @@
 	corfu-quit-no-match 'separator))
 
 (use-package kind-icon ;;kind-icon美化
-  :defer 1
   :after corfu
   :custom
   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
 
 ;;===========================================================
 ;;orderless
@@ -166,24 +194,6 @@
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
   (setq enable-recursive-minibuffers t))
 
-
-;;=========================================
-;;auctex
-;;=======================================
-(use-package latex
-  :defer 1
-  :init
-  (load "auctex.el" nil t t)
-  (setq TeX-auto-save t)
-  (setq TeX-parse-self t)
-  (setq-default TeX-master nil)
-  (setq TeX-output-view-style (quote (("^pdf$" "." "evince %o %(outpage)"))))
-  (add-hook 'LaTeX-mode-hook
-	    (lambda()
-	      (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
-	      (setq TeX-command-default "XeLaTeX"))))
-
-
 ;================================================
 ;racket
 ;;===============================================
@@ -199,16 +209,8 @@
   :defer 1
   :init (global-undo-tree-mode)
   :after hydra
-  :bind ("C-x C-h u" . hydra-undo-tree/body)
-  :hydra (hydra-undo-tree (:hint nil)
-  "
-  _p_: undo  _n_: redo _s_: save _l_: load   "
-  ("p"   undo-tree-undo)
-  ("n"   undo-tree-redo)
-  ("s"   undo-tree-save-history)
-  ("l"   undo-tree-load-history)
-  ("u"   undo-tree-visualize "visualize" :color blue)
-  ("q"   nil "quit" :color blue)))
+  :bind ("C-x u" . undo-tree-undo)
+  :bind ("C-x r" . undo-tree-redo))
 
 
 ;;=================================================
@@ -245,7 +247,7 @@
 (use-package good-scroll
   :defer 1
   :init
-  (good-scroll-mode))
+  (good-scroll-mode t))
 
 ;==================================================
 ;有道翻译
