@@ -1,4 +1,5 @@
 ;;(require 'package)
+(add-hook 'after-init-hook (lambda()
 (set-frame-position (selected-frame) 85 40)
 (set-frame-width (selected-frame) 170)
 (set-frame-height (selected-frame) 40)
@@ -9,7 +10,6 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Cascadia Code" :foundry "outline" :slant normal :weight normal :height 102 :width normal)))))
 
-
 ;=======================================================
 ;Set Channels
 ;=======================================================
@@ -17,7 +17,6 @@
                          ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
 (package-initialize) ;; You might already have this line
-
 (defvar my/packages '(
 		use-package
 		corfu
@@ -44,9 +43,7 @@
 		spaceline
 		cape
 		) "Default packages")
-
- (setq package-selected-packages my/packages)
-
+(setq package-selected-packages my/packages)
 (defun my/packages-installed-p ()
   (setq tmp t)
   (dolist (pkg my/packages)
@@ -59,7 +56,6 @@
      (dolist (pkg my/packages)
        (when (not (package-installed-p pkg))
 	 (package-install pkg))))
-
 
 ;========================================================
 ;basic Settings
@@ -115,7 +111,7 @@
 (add-hook 'LaTeX-mode-hook
 	  (lambda()
 	    (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
-	    (setq TeX-command-default "XeLaTeX")))
+	    (setq TeX-command-default "XeLaTeX"))))
 ;;============================================
 ;;which-key
 ;;===============================================
@@ -160,8 +156,6 @@
   :defer 1
   :init
   (global-corfu-mode)
-  (setq completion-cycle-threshold 3)
-  (setq tab-always-indent 'complete)
   (setq corfu-auto t
 	corfu-quit-no-match 'separator))
 
@@ -178,11 +172,6 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block))
-
-;; Use Company backends as Capfs.
-(setq-local completion-at-point-functions
-  (mapcar #'cape-company-to-capf
-    (list #'company-files #'company-ispell #'company-dabbrev)))
 
 ;;===========================================================
 ;;orderless
@@ -280,13 +269,18 @@
 ;有道翻译
 ;==================================================
 ;;youdao
+(use-package youdao-dictionary
+  :defer 1
+  :init
 (setq url-automatic-caching t)
 (global-set-key (kbd "C-c y") 'youdao-dictionary-search-at-point)
-(setq youdao-dictionary-search-history-file "~/.emacs.d/.youdao")
+(setq youdao-dictionary-search-history-file "~/.emacs.d/.youdao"))
 
 ;;swiper
-
-(global-set-key (kbd "C-s") 'swiper) 
+(use-package swiper
+  :defer 1
+  :init
+(global-set-key (kbd "C-s") 'swiper))
 
 
 
@@ -320,9 +314,7 @@
     (spaceline-toggle-buffer-encoding-abbrev-on)
     (setq powerline-default-separator 'rounded)
     (setq spaceline-highlight-face-func 'spaceline-highlight-face-modified)
-    (spaceline-emacs-theme 'date 'time)))
-
-
+    (spaceline-emacs-theme 'date 'time)))))
 (provide 'init)
 
 ;;; init.el ends here
