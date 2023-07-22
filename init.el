@@ -1,4 +1,4 @@
-;(require 'package)
+;;(require 'package)
 (set-frame-position (selected-frame) 85 40)
 (set-frame-width (selected-frame) 170)
 (set-frame-height (selected-frame) 40)
@@ -32,6 +32,7 @@
 		neotree
 		racket-mode
 		good-scroll
+		undo-tree
 		auctex
 		which-key
 		highlight-symbol
@@ -41,6 +42,7 @@
 		kind-icon
 		all-the-icons
 		spaceline
+		cape
 		) "Default packages")
 
  (setq package-selected-packages my/packages)
@@ -57,6 +59,8 @@
      (dolist (pkg my/packages)
        (when (not (package-installed-p pkg))
 	 (package-install pkg))))
+
+
 ;========================================================
 ;basic Settings
 ;;======================================================
@@ -87,6 +91,8 @@
   :bind ("<f3>" . highlight-symbol))
 
 
+
+
 ;===============================================
 ;dashboard
 ;================================================
@@ -94,11 +100,22 @@
 (use-package dashboard
   :defer 1
   :init
-  (dashboard-setup-startup-hook)
-  :config
   (setq dashboard-banner-logo-title "Welcome to Emacs!")
-  (setq-default dashboard-startup-banner 'logo))
-
+  (setq-default dashboard-startup-banner 'logo)
+  (dashboard-open))
+;;=============================================
+;;auctex
+;;=============================================
+(load "auctex.el" nil t t)
+(load "preview.el" nil t t)
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+(setq TeX-output-view-style (quote (("^pdf$" "." "evince %o %(outpage)"))))
+(add-hook 'LaTeX-mode-hook
+	  (lambda()
+	    (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
+	    (setq TeX-command-default "XeLaTeX")))
 ;;============================================
 ;;which-key
 ;;===============================================
@@ -151,14 +168,27 @@
 (use-package kind-icon ;;kind-icon美化
   :after corfu
   :custom
-  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+  (kind-icon-default-face 'corfu-default)
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+(use-package cape
+  :defer 1
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
+
+;; Use Company backends as Capfs.
+(setq-local completion-at-point-functions
+  (mapcar #'cape-company-to-capf
+    (list #'company-files #'company-ispell #'company-dabbrev)))
 
 ;;===========================================================
 ;;orderless
 ;;===========================================================
 (use-package orderless
+  :defer 1
   :init
   ;; Configure a custom style dispatcher (see the Consult wiki)
   ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
@@ -172,12 +202,15 @@
 ;;======================================
 ;; Enable vertico
 (use-package vertico
+  :defer 1
   :init
   (vertico-mode))
 (use-package savehist
+  :defer 1
   :init
   (savehist-mode))
 (use-package emacs
+  :defer 1
   :init
   (defun crm-indicator (args)
     (cons (format "[CRM%s] %s"
@@ -195,7 +228,7 @@
 ;================================================
 ;racket
 ;;===============================================
-(use-package racket
+(use-package racket-mode
   :defer 1
   :init
   (setq scheme-program-name "racket"))
@@ -205,16 +238,13 @@
 ;;================================================
 (use-package undo-tree
   :defer 1
-  :init (global-undo-tree-mode)
-  :after hydra
-  :bind ("C-x C-u" . undo-tree-undo)
-  :bind ("C-x C-r" . undo-tree-redo))
+  :init (global-undo-tree-mode t))
 
 
 ;;=================================================
 ;;yasnippet
 ;;=================================================
-(use-package yas-global-mode
+(use-package yasnippet
   :defer 1
   :init
   (setq yas-snippet-dirs
@@ -222,7 +252,6 @@
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets
-  :defer 1
   :after yasnippet)
 ;;================================================
 ;;rainbow-delimiters
@@ -234,7 +263,7 @@
 ;;==============================================
 ;;flycheck
 ;;==============================================
-(use-package global-flycheck-mode
+(use-package flycheck
   :defer 1
   :init
   (global-flycheck-mode 1))
@@ -273,7 +302,7 @@
  '(display-time-mode t)
  '(global-display-line-numbers-mode t)
  '(package-selected-packages
-   '(vertico orderless neotree kind-icon corfu hydra yasnippet-snippets highlight-symbol use-package-hydra which-key spaceline atom-one-dark-theme undo-tree rainbow-delimiters yasnippets auctex dashboard swiper youdao-dictionary monokai-theme))
+   '(company cape vertico orderless neotree kind-icon corfu hydra yasnippet-snippets highlight-symbol use-package-hydra which-key spaceline atom-one-dark-theme undo-tree rainbow-delimiters yasnippets auctex dashboard swiper youdao-dictionary monokai-theme))
  '(size-indication-mode t)
  '(tool-bar-mode nil))
 
