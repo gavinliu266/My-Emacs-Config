@@ -108,10 +108,8 @@
 (setq TeX-parse-self t)
 (setq-default TeX-master nil)
 (setq TeX-output-view-style (quote (("^pdf$" "." "evince %o %(outpage)"))))
-(add-hook 'LaTeX-mode-hook
-	  (lambda()
-	    (add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
-	    (setq TeX-command-default "XeLaTeX"))))
+(add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
+(setq TeX-command-default "XeLaTeX")
 ;;============================================
 ;;which-key
 ;;===============================================
