@@ -1,22 +1,17 @@
-;;(require 'package)
-(add-hook 'after-init-hook (lambda()
+;;; package --- Summary
+;;; Commentary:
+(setq gc-cons-threshold (* 50 1024 1024))
 (set-frame-position (selected-frame) 85 40)
-(set-frame-width (selected-frame) 170)
-(set-frame-height (selected-frame) 40)
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "Cascadia Code" :foundry "outline" :slant normal :weight normal :height 102 :width normal)))))
-
-;=======================================================
+(set-frame-width (selected-frame) 192)
+(set-frame-height (selected-frame) 43)
+;;=======================================================
 ;Set Channels
-;=======================================================
+;;=======================================================
 (setq package-archives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
                          ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
 (package-initialize) ;; You might already have this line
+
 (defvar my/packages '(
 		use-package
 		corfu
@@ -34,7 +29,6 @@
 		undo-tree
 		auctex
 		which-key
-		highlight-symbol
 		monokai-theme
 		rainbow-delimiters
 		neotree
@@ -56,19 +50,18 @@
     (dolist (pkg my/packages)
       (when (not (package-installed-p pkg))
 	(package-install pkg))))
-(use-package all-the-icons)
 
 ;========================================================
 ;basic Settings
 ;;======================================================
-(show-paren-mode t) ;括号匹配高亮
-
-(size-indication-mode t)
-(electric-pair-mode t)                       ; 自动补全括号
-(global-auto-revert-mode t)                  ; 当另一程序修改了文件时，让 Emacs 及时刷新 Buffer
-(delete-selection-mode t)                    ; 选中文本后输入文本会替换文本（更符合我们习惯了的其它编辑器的逻辑）
+(add-hook 'prog-mode-hook
+	  (lambda()
+	    (show-paren-mode t) ;括号匹配高亮
+	    (size-indication-mode t)
+	    (electric-pair-mode t)                       ; 自动补全括号
+	    (global-auto-revert-mode t)                  ; 当另一程序修改了文件时，让 Emacs 及时刷新 Buffer
+	    (delete-selection-mode t)))                    ; 选中文本后输入文本会替换文本（更符合我们习惯了的其它编辑器的逻辑）
 (tool-bar-mode -1)
-(menu-bar-mode 1)
 (scroll-bar-mode -1)
 (setq confirm-kill-emacs #'yes-or-no-p)
 
@@ -77,16 +70,6 @@
 (setq auto-save-default nil
       make-backup-files nil)
 (defalias 'yes-or-no-p 'y-or-n-p)
-
-(setq gc-cons-threshold (* 50 1000 1000))
-;;==============================================
-;;hightlight-symbol
-;;=============================================
-(use-package highlight-symbol
-  :init (highlight-symbol-mode)
-  :bind ("<f3>" . highlight-symbol))
-
-
 
 
 ;===============================================
@@ -98,64 +81,58 @@
   (setq dashboard-banner-logo-title "Welcome to Emacs!")
   (setq-default dashboard-startup-banner 'logo)
   (dashboard-open))
-;;=============================================
-;;auctex
-;;=============================================
-(load "auctex.el" nil t t)
-(load "preview.el" nil t t)
-(setq TeX-auto-save t)
-(setq TeX-parse-self t)
-(setq-default TeX-master nil)
-(setq TeX-output-view-style (quote (("^pdf$" "." "evince %o %(outpage)"))))
-(add-to-list 'TeX-command-list '("XeLaTeX" "%`xelatex%(mode)%' %t" TeX-run-TeX nil t))
-(setq TeX-command-default "XeLaTeX")
 ;;============================================
 ;;which-key
 ;;===============================================
-(which-key-mode t)
+(which-key-mode)
 
 
 ;;===============================================
 ;;neotree
 ;;================================================
 (use-package neotree
+  :defer 1
   :init
   (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
   (setq-default neo-show-hidden-files t)
-  (setq neo-window-fixed-size nil)
   (setq-default neo-window-width 37)
-  (neotree))
+  (neotree)) 
 
 ;;=======================================
 ;;orgSet
 ;;========================================
-;;  (require 'org-bullets)
-(use-package org-bullets
-  :init
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-  (setq org-todo-keywords
-	'((sequence "TODO(t!)" "HACK(h!)" "DONE(d!)" "CANCELED(c!)")))
-  (setq org-todo-keyword-faces '(("TODO" . (:foreground "red" :background "clear" :weight bold))
-				 ("HACK" . (:foreground "yellow" :background "clear" :weight bold))
-				 ("DONE" . (:foreground "green" :background "clear" :weight bold))
-				 ("CANCELED" . (:foreground "gray" :background "clear")))))
+(require 'org-bullets)
+(add-hook 'org-mode-hook 'org-bullets-mode)
+(setq org-bullets-bullet-list '("☰" "☷" "☯" "☭" "⋐"))
+(setq org-ellipsis " ▼ ")
+(setq org-todo-keywords
+      '((sequence "TODO(t!)" "HACK(h!)" "DONE(d!)" "CANCELED(c!)")))
+(setq org-todo-keyword-faces '(("TODO" . (:foreground "red" :weight bold))
+			       ("HACK" . (:foreground "yellow" :weight bold))
+			       ("DONE" . (:foreground "green" :weight bold))
+			       ("CANCELED" . (:foreground "gray"))))
 
-
+(defface hi-red-b '((t (:foreground "#e50062"))) t)
+(defface hi-blue-b '((t (:foreground "#6200e5"))) t)
+(defun org-red-highlight ()
+  (interactive)
+  (hi-lock-mode t)
+  (highlight-regexp "[ \\t]\\(\\*\\(\\S-[^*]+\\S-\\|[^*]\\{1,2\\}\\)\\*\\)[ \\t\\n]*" 'hi-red-b))
+(add-hook 'org-mode-hook 'org-red-highlight)
 ;=================================================
 ;corfu
 ;;================================================
-(global-corfu-mode)
+(add-hook 'prog-mode-hook 'corfu-mode)
 (setq corfu-auto t
       corfu-quit-no-match 'separator)
-
 (use-package kind-icon ;;kind-icon美化
   :after corfu
   :custom
   (kind-icon-default-face 'corfu-default)
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
 (use-package cape
+  :after corfu
   :init
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
@@ -171,20 +148,23 @@
 ;;vertico
 ;;======================================
 ;; Enable vertico
-(vertico-mode)
-(savehist-mode)
-(defun crm-indicator (args)
-  (cons (format "[CRM%s] %s"
-                (replace-regexp-in-string
-                 "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                 crm-separator)
-                (car args))
-        (cdr args)))
-(advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-(setq minibuffer-prompt-properties
-      '(read-only t cursor-intangible t face minibuffer-prompt))
-(add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-(setq enable-recursive-minibuffers t)
+(add-hook
+ 'minibuffer-mode-hook
+ (progn
+   (vertico-mode)
+   (savehist-mode)
+   (defun crm-indicator (args)
+     (cons (format "[CRM%s] %s"
+                   (replace-regexp-in-string
+                    "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                    crm-separator)
+                   (car args))
+           (cdr args)))
+   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+   (setq minibuffer-prompt-properties
+	 '(read-only t cursor-intangible t face minibuffer-prompt))
+   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+   (setq enable-recursive-minibuffers t)))
 
 ;================================================
 ;racket
@@ -194,31 +174,30 @@
 ;;================================================
 ;;undo-tree
 ;;================================================
-(global-undo-tree-mode t)
+(setq undo-tree-history-directory-alist `(("." . "~/.emacs.d/.cache/")))
+(global-undo-tree-mode)
 
 
 ;;=================================================
 ;;yasnippet
 ;;=================================================
-(use-package yasnippet
-  :defer 1
-  :init
-  (setq yas-snippet-dirs
-      '("~/.emacs.d/snippets"))
-  (yas-global-mode 1))
+(add-hook
+ 'prog-mode-hook
+ (progn
+   (setq yas-snippet-dirs
+	      '("~/.emacs.d/snippets"))
+   (yas-global-mode)))
 
-(use-package yasnippet-snippets
-  :after yasnippet)
+
+
 ;;================================================
 ;;rainbow-delimiters
 ;;=============================================
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
-
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 ;;==============================================
 ;;flycheck
 ;;==============================================
-(global-flycheck-mode 1)
+(add-hook 'prog-mode-hook 'flycheck-mode)
 
 ;=================================================
 ;goodScroll
@@ -234,9 +213,7 @@
 (setq youdao-dictionary-search-history-file "~/.emacs.d/.youdao")
 
 ;;swiper
-(use-package swiper
-  :init
-(global-set-key (kbd "C-s") 'swiper))
+(global-set-key (kbd "C-s") 'swiper)
 
 
 ;;======================================================
@@ -251,10 +228,10 @@
     (spaceline-toggle-buffer-encoding-abbrev-on)
     (setq powerline-default-separator 'rounded)
     (setq spaceline-highlight-face-func 'spaceline-highlight-face-modified)
-    (spaceline-emacs-theme 'date 'time)))))
+    (spaceline-emacs-theme 'date 'time)))
 (provide 'init)
 
-;;; init.el ends here
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -265,13 +242,9 @@
    '("c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" "288482f5c627c1fe5a1d26fcc17ec6ca8837f36bf940db809895bf3f8e2e4edd" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "37c8c2817010e59734fe1f9302a7e6a2b5e8cc648cf6a6cc8b85f3bf17fececf" default))
  '(display-time-mode t)
  '(global-display-line-numbers-mode t)
- '(package-selected-packages
-   '(all-the-icons good-scroll racket-mode org-bullets yasnippet flycheck treemacs-all-the-icons company cape vertico orderless neotree kind-icon corfu hydra yasnippet-snippets highlight-symbol use-package-hydra which-key spaceline atom-one-dark-theme undo-tree rainbow-delimiters yasnippets auctex dashboard swiper youdao-dictionary monokai-theme))
+ '(safe-local-variable-values '((eval org-content 3)))
  '(size-indication-mode t)
  '(tool-bar-mode nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "Cascadia Code" :foundry "outline" :slant normal :weight normal :height 102 :width normal)))))
+(set-face-attribute 'default nil :font (font-spec :family "Consolas" :weight 'regular :height 122))
+(set-fontset-font t 'han (font-spec :family "黑体" :weight 'regular :height 122))
+;;; init.el ends here
