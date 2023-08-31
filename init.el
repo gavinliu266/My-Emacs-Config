@@ -23,8 +23,8 @@
 		swiper
 		vertico
 		orderless
-	        flycheck
-	        yasnippet
+	  flycheck
+	  yasnippet
 		yasnippet-snippets
 		dashboard
 		org-bullets
@@ -34,7 +34,6 @@
 		undo-tree
 		auctex
 		which-key
-;;		monokai-theme
 		rainbow-delimiters
 		neotree
 		kind-icon
@@ -72,10 +71,8 @@
 (global-auto-revert-mode t)
 (delete-selection-mode t)
 (setq auto-save-default nil
-      make-backup-files nil)
-
-
-(setq confirm-kill-emacs #'yes-or-no-p)
+      make-backup-files nil
+      confirm-kill-emacs #'yes-or-no-p)
 (set-locale-environment "en_US.utf-8")
 (setq system-time-locale "C")
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -146,7 +143,6 @@
 ;;============
 ;;vertico
 ;;============
-;; Enable vertico
 (add-hook
  'minibuffer-mode-hook
  (progn
@@ -200,7 +196,7 @@
 (good-scroll-mode t)
 
 ;;============
-;;有道翻译
+;;youdao-dictionary
 ;;============
 (setq url-automatic-caching t)
 (global-set-key (kbd "C-c y") 'youdao-dictionary-search-at-point)
